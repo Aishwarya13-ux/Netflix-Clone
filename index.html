@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #141414;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 10%, transparent);
+            z-index: 1000;
+            padding: 15px 60px;
+            transition: background-color 0.3s ease;
+        }
+
+        .header.scrolled {
+            background-color: #141414;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e50914;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #b3b3b3;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            background: transparent;
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 35px 8px 15px;
+            border-radius: 4px;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #e50914;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b3b3b3;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: #e50914;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px 0;
+            min-width: 180px;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 15px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+            display: flex;
+            align-items: center;
+            padding: 0 60px;
+            position: relative;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 500px;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            color: #cccccc;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255,255,255,0.8);
+        }
+
+        .btn-secondary {
+            background: rgba(109, 109, 110, 0.7);
+            color: #ffffff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(109, 109, 110, 0.4);
+        }
+
+        /* Content Rows */
+        .content-rows {
+            padding: 0 60px;
+            margin-top: -100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .row {
+            margin-bottom: 50px;
+        }
+
+        .row-header {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e5e5e5;
+        }
+
+        .row-container {
+            position: relative;
+        }
+
+        .row-content {
+            display: flex;
+            gap: 8px;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding: 10px 0;
+        }
+
+        .movie-card {
+            min-width: 300px;
+            height: 169px;
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .movie-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .movie-info {
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .scroll-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.8);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(0,0,0,0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .scroll-btn.left {
+            left: -25px;
+        }
+
+        .scroll-btn.right {
+            right: -25px;
+        }
+
+        .row-container:hover .scroll-btn {
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #181818;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(24,24,24,1));
+        }
+
+        .modal-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .modal-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .modal-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #cccccc;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #cccccc;
+            padding: 0 20px 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+            }
+
+            .hero {
+                padding: 0 20px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .content-rows {
+                padding: 0 20px;
+            }
+
+            .movie-card {
+                min-width: 200px;
+                height: 113px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Categories */
+        .categories {
+            padding: 0 60px;
+            margin: 40px 0;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab:hover,
+        .category-tab.active {
+            background: #e50914;
+            border-color: #e50914;
+        }
+
+        @media (max-width: 768px) {
+            .categories {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="#" class="logo">NETFLIX</a>
+                <ul class="nav-links">
+                    <li><a href="#" data-category="home">Home</a></li>
+                    <li><a href="#" data-category="tv">TV Shows</a></li>
+                    <li><a href="#" data-category="movies">Movies</a></li>
+                    <li><a href="#" data-category="new">New & Popular</a></li>
+                    <li><a href="#" data-category="list">My List</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-box" id="searchBox" placeholder="Search movies, shows...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div class="profile-dropdown">
+                    <button class="profile-btn" id="profileBtn">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-edit"></i> Edit Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Account
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-question-circle"></i> Help Center
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d1fe54d7-7dfc-4876-8731-0ebd6f797e58.png" alt="Epic fantasy landscape with a lone warrior standing on a cliff overlooking a vast magical kingdom with floating islands and glowing crystals at sunset" class="hero-bg" id="heroBg">
+        <div class="hero-content">
+            <h1 class="hero-title" id="heroTitle">Stranger Things</h1>
+            <p class="hero-description" id="heroDescription">
+                When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="playContent()">
+                    <i class="fas fa-play"></i>
+                    Play
+                </button>
+                <button class="btn btn-secondary" onclick="openModal('hero')">
+                    <i class="fas fa-info-circle"></i>
+                    More Info
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All</button>
+            <button class="category-tab" data-category="action">Action</button>
+            <button class="category-tab" data-category="drama">Drama</button>
+            <button class="category-tab" data-category="comedy">Comedy</button>
+            <button class="category-tab" data-category="thriller">Thriller</button>
+            <button class="category-tab" data-category="sci-fi">Sci-Fi</button>
+        </div>
+    </section>
+
+    <!-- Content Rows -->
+    <main class="content-rows">
+        <div class="row">
+            <h2 class="row-header">Trending Now</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="trending">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2 class="row-header">Netflix Originals</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="originals">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2 class="row-header">Popular Movies</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="movies">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2 class="row-header">TV Shows</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="shows">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2 class="row-header">Action & Adventure</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="action">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <h2 class="row-header">Comedies</h2>
+            <div class="row-container">
+                <button class="scroll-btn left" onclick="scrollRow(this, 'left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="row-content" id="comedy">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollRow(this, 'right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3d5d1101-ad71-4aaf-938a-c0f44fadaf7c.png" alt="Detailed movie scene showing dramatic action sequence with special effects and cinematic lighting" class="modal-bg" id="modalBg">
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="modal-info">
+                    <h2 class="modal-title" id="modalTitle">Movie Title</h2>
+                    <div class="modal-details">
+                        <span id="modalYear">2023</span>
+                        <span id="modalRating">PG-13</span>
+                        <span id="modalDuration">2h 15m</span>
+                    </div>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="playContent()">
+                            <i class="fas fa-play"></i>
+                            Play
+                        </button>
+                        <button class="btn btn-secondary" onclick="addToList()">
+                            <i class="fas fa-plus"></i>
+                            My List
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-description" id="modalDescription">
+                Movie description will appear here...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample movie data
+        const movieData = {
+            trending: [
+                {
+                    title: "The Witcher",
+                    image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2ce64730-2027-4902-90d7-1bab34f04815.png",
+                    alt: "Medieval fantasy warrior with silver hair wielding a sword against monsters in a dark forest",
+                    year: "2023",
+                    rating: "TV-MA",
+                    duration: "1 Season",
+                    description: "Geralt of Rivia, a monster hunter, struggles to find his place in a world where people often prove more wicked than beasts."
+                },
+                {
+                    title: "Wednesday",
+                    image: "https://placehold.co/300x169",
+                    alt: "Gothic teenage girl with dark braids in a spooky boarding school setting with ravens and dark academia aesthetic",
+                    year: "2022",
+                    rating: "TV-14",
+                    duration: "1 Season",
+                    description: "Smart, sarcastic and a little dead inside, Wednesday Addams investigates a murder spree while making new friends."
+                },
+                {
+                    title: "Squid Game",
+                    image: "https://placehold.co/300x169",
+                    alt: "People in green tracksuits playing deadly children's games in a mysterious facility with pink guards watching",
+                    year: "2021",
+                    rating: "TV-MA",
+                    duration: "1 Season",
+                    description: "Players compete in childhood games with deadly consequences for a chance to win a massive cash prize."
+                },
+                {
+                    title: "Money Heist",
+                    image: "https://placehold.co/300x169",
+                    alt: "Group of robbers wearing red jumpsuits and Salvador Dali masks inside a bank vault surrounded by money",
+                    year: "2021",
+                    rating: "TV-MA",
+                    duration: "5 Seasons",
+                    description: "A criminal mastermind known as The Professor plans the biggest heist in recorded history."
+                },
+                {
+                    title: "Stranger Things 4",
+                    image: "https://placehold.co/300x169",
+                    alt: "Group of teenagers with supernatural powers facing dark creatures in an upside-down alternate dimension",
+                    year: "2022",
+                    rating: "TV-14",
+                    duration: "4 Seasons",
+                    description: "Six months later, the battle against evil is far from over as terror spreads beyond Hawkins."
+                },
+                {
+                    title: "Ozark",
+                    image: "https://placehold.co/300x169",
+                    alt: "Family standing by a lake at dusk with money laundering operation in background and dark blue tones",
+                    year: "2022",
+                    rating: "TV-MA",
+                    duration: "4 Seasons",
+                    description: "A financial advisor drags his family into the world of money laundering in the Missouri Ozarks."
+                }
+            ],
+            originals: [
+                {
+                    title: "House of Cards",
+                    image: "https://placehold.co/300x169",
+                    alt: "Political drama scene showing a politician in a suit standing in the US Capitol building with American flags",
+                    year: "2018",
+                    rating: "TV-MA",
+                    duration: "6 Seasons",
+                    description: "A ruthless politician will stop at nothing to conquer Washington, D.C."
+                },
+                {
+                    title: "Orange Is the New Black",
+                    image: "https://placehold.co/300x169",
+                    alt: "Diverse group of women in orange prison uniforms in a correctional facility setting",
+                    year: "2019",
+                    rating: "TV-MA",
+                    duration: "7 Seasons",
+                    description: "A privileged New Yorker ends up in prison after her past catches up with her."
+                },
+                {
+                    title: "The Crown",
+                    image: "https://placehold.co/300x169",
+                    alt: "British royal family in elegant period costumes inside Buckingham Palace with ornate decorations",
+                    year: "2022",
+                    rating: "TV-MA",
+                    duration: "5 Seasons",
+                    description: "Follows the reign of Queen Elizabeth II from the 1940s to modern times."
+                },
+                {
+                    title: "Black Mirror",
+                    image: "https://placehold.co/300x169",
+                    alt: "Futuristic dystopian scene with person looking at multiple screens showing dark technology themes",
+                    year: "2019",
+                    rating: "TV-MA",
+                    duration: "5 Seasons",
+                    description: "An anthology series exploring a twisted, high-tech multiverse."
+                },
+                {
+                    title: "Narcos",
+                    image: "https://placehold.co/300x169",
+                    alt: "Colombian drug cartel scene with men in 1980s attire surrounded by cocaine and weapons",
+                    year: "2017",
+                    rating: "TV-MA",
+                    duration: "3 Seasons",
+                    description: "The rise and fall of Colombian drug lord Pablo Escobar."
+                },
+                {
+                    title: "Mindhunter",
+                    image: "https://placehold.co/300x169",
+                    alt: "FBI agents in 1970s setting interviewing serial killers in dark interrogation room",
+                    year: "2019",
+                    rating: "TV-MA",
+                    duration: "2 Seasons",
+                    description: "FBI agents delve deep into the psychology of murder."
+                }
+            ],
+            movies: [
+                {
+                    title: "Red Notice",
+                    image: "https://placehold.co/300x169",
+                    alt: "Action movie poster with three people in expensive suits standing in front of stolen art and luxury cars",
+                    year: "2021",
+                    rating: "PG-13",
+                    duration: "1h 58m",
+                    description: "An FBI profiler pursuing the world's most wanted art thief becomes his reluctant partner."
+                },
+                {
+                    title: "Don't Look Up",
+                    image: "https://placehold.co/300x169",
+                    alt: "Scientists looking through telescope at a comet approaching Earth with world leaders ignoring the warning",
+                    year: "2021",
+                    rating: "R",
+                    duration: "2h 18m",
+                    description: "Two astronomers go on a media tour to warn humankind of a planet-killing comet."
+                },
+                {
+                    title: "The Adam Project",
+                    image: "https://placehold.co/300x169",
+                    alt: "Time traveler in futuristic suit meeting his younger self in a science fiction setting with portal effects",
+                    year: "2022",
+                    rating: "PG-13",
+                    duration: "1h 46m",
+                    description: "A time-traveling pilot teams up with his younger self and late father to save the future."
+                },
+                {
+                    title: "Extraction",
+                    image: "https://placehold.co/300x169",
+                    alt: "Action hero with weapons in urban combat scene with explosions and military vehicles",
+                    year: "2020",
+                    rating: "R",
+                    duration: "1h 56m",
+                    description: "A black-market mercenary who has nothing to lose is hired to rescue a kidnapped boy."
+                },
+                {
+                    title: "Bird Box",
+                    image: "https://placehold.co/300x169",
+                    alt: "Woman and children wearing blindfolds navigating through post-apocalyptic world with dark creatures lurking",
+                    year: "2018",
+                    rating: "R",
+                    duration: "2h 4m",
+                    description: "A mysterious force decimates the population, and only one thing is certain: if you see it, you die."
+                },
+                {
+                    title: "The Irishman",
+                    image: "https://placehold.co/300x169",
+                    alt: "Elderly man in suit reflecting on his past with 1960s mob scenes and vintage cars in background",
+                    year: "2019",
+                    rating: "R",
+                    duration: "3h 29m",
+                    description: "A mob hitman recalls his possible involvement with the slaying of Jimmy Hoffa."
+                }
+            ],
+            shows: [
+                {
+                    title: "Breaking Bad",
+                    image: "https://placehold.co/300x169",
+                    alt: "Chemistry teacher in hazmat suit cooking drugs in RV in desert with yellow hazardous atmosphere",
+                    year: "2013",
+                    rating: "TV-MA",
+                    duration: "5 Seasons",
+                    description: "A high school chemistry teacher turned methamphetamine producer."
+                },
+                {
+                    title: "Better Call Saul",
+                    image: "https://placehold.co/300x169",
+                    alt: "Lawyer in colorful suit standing in courthouse with legal documents and desert backdrop",
+                    year: "2022",
+                    rating: "TV-MA",
+                    duration: "6 Seasons",
+                    description: "The story of lawyer Saul Goodman before he became Walter White's attorney."
+                },
+                {
+                    title: "Dark",
+                    image: "https://placehold.co/300x169",
+                    alt: "Mysterious cave entrance with time travel portals and missing children posters in German town",
+                    year: "2020",
+                    rating: "TV-MA",
+                    duration: "3 Seasons",
+                    description: "A family saga with a supernatural twist set in a German town."
+                },
+                {
+                    title: "The Umbrella Academy",
+                    image: "https://placehold.co/300x169",
+                    alt: "Seven adopted siblings with superpowers standing together in mansion with apocalyptic background",
+                    year: "2022",
+                    rating: "TV-14",
+                    duration: "3 Seasons",
+                    description: "A dysfunctional family of adopted sibling superheroes reunite to solve their father's death."
+                },
+                {
+                    title: "Lucifer",
+                    image: "https://placehold.co/300x169",
+                    alt: "Well-dressed devil character with wings in Los Angeles setting with police detective partner",
+                    year: "2021",
+                    rating: "TV-14",
+                    duration: "6 Seasons",
+                    description: "The Devil comes to Earth and teams up with a detective to solve crimes."
+                },
+                {
+                    title: "Vikings",
+                    image: "https://placehold.co/300x169",
+                    alt: "Norse warriors with axes and shields on longships sailing through fjords with dramatic storm clouds",
+                    year: "2020",
+                    rating: "TV-MA",
+                    duration: "6 Seasons",
+                    description: "The adventures of Ragnar Lothbrok, the greatest hero of his age."
+                }
+            ],
+            action: [
+                {
+                    title: "John Wick",
+                    image: "https://placehold.co/300x169",
+                    alt: "Professional assassin in black suit with gun in neon-lit nightclub with action choreography",
+                    year: "2019",
+                    rating: "R",
+                    duration: "2h 11m",
+                    description: "An ex-hitman comes out of retirement to track down the gangsters that killed his dog."
+                },
+                {
+                    title: "Mad Max: Fury Road",
+                    image: "https://placehold.co/300x169",
+                    alt: "Post-apocalyptic desert chase scene with modified vehicles and warriors in wasteland setting",
+                    year: "2015",
+                    rating: "R",
+                    duration: "2h 0m",
+                    description: "In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler."
+                },
+                {
+                    title: "The Matrix",
+                    image: "https://placehold.co/300x169",
+                    alt: "Person dodging bullets in slow motion in digital matrix world with green code falling",
+                    year: "1999",
+                    rating: "R",
+                    duration: "2h 16m",
+                    description: "A computer programmer discovers reality is actually a simulation."
+                },
+                {
+                    title: "Mission: Impossible",
+                    image: "https://placehold.co/300x169",
+                    alt: "Secret agent performing death-defying stunt hanging from helicopter over mountains",
+                    year: "2018",
+                    rating: "PG-13",
+                    duration: "2h 27m",
+                    description: "Ethan Hunt and his team race against time to prevent a global catastrophe."
+                },
+                {
+                    title: "Fast & Furious",
+                    image: "https://placehold.co/300x169",
+                    alt: "High-speed car chase with sports cars jumping between skyscrapers in modern city",
+                    year: "2021",
+                    rating: "PG-13",
+                    duration: "2h 25m",
+                    description: "Dom and his crew must take on an international terrorist."
+                },
+                {
+                    title: "Die Hard",
+                    image: "https://placehold.co/300x169",
+                    alt: "Police officer with gun in skyscraper during hostage situation with explosions and broken glass",
+                    year: "1988",
+                    rating: "R",
+                    duration: "2h 12m",
+                    description: "A New York police officer battles terrorists in a Los Angeles skyscraper."
+                }
+            ],
+            comedy: [
+                {
+                    title: "The Office",
+                    image: "https://placehold.co/300x169",
+                    alt: "Office workers in mundane workplace setting with awkward expressions and documentary-style lighting",
+                    year: "2013",
+                    rating: "TV-14",
+                    duration: "9 Seasons",
+                    description: "A mockumentary about office life in a mid-sized paper company."
+                },
+                {
+                    title: "Friends",
+                    image: "https://placehold.co/300x169",
+                    alt: "Six friends sitting on couch in New York apartment with 1990s fashion and coffee shop atmosphere",
+                    year: "2004",
+                    rating: "TV-14",
+                    duration: "10 Seasons",
+                    description: "The lives and loves of six friends living in New York City."
+                },
+                {
+                    title: "Brooklyn Nine-Nine",
+                    image: "https://placehold.co/300x169",
+                    alt: "Police detectives in precinct having fun with crime investigation board and colorful personalities",
+                    year: "2021",
+                    rating: "TV-14",
+                    duration: "8 Seasons",
+                    description: "Comedy series following the exploits of a talented detective."
+                },
+                {
+                    title: "Schitt's Creek",
+                    image: "https://placehold.co/300x169",
+                    alt: "Wealthy family in small town motel adjusting to simple life with quirky local characters",
+                    year: "2020",
+                    rating: "TV-14",
+                    duration: "6 Seasons",
+                    description: "A wealthy family loses everything and moves to a small town they once bought as a joke."
+                },
+                {
+                    title: "Parks and Recreation",
+                    image: "https://placehold.co/300x169",
+                    alt: "Enthusiastic government worker in parks department with small town civic building background",
+                    year: "2015",
+                    rating: "TV-14",
+                    duration: "7 Seasons",
+                    description: "A mid-level bureaucrat in the Parks Department of a fictional town in Indiana."
+                },
+                {
+                    title: "The Good Place",
+                    image: "https://placehold.co/300x169",
+                    alt: "People in colorful afterlife setting with philosophical themes and whimsical architecture",
+                    year: "2020",
+                    rating: "TV-14",
+                    duration: "4 Seasons",
+                    description: "A woman accidentally finds herself in the good place of the afterlife."
+                }
+            ]
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent();
+            setupEventListeners();
+            updateHeroContent();
+        });
+
+        // Load content into rows
+        function loadContent() {
+            Object.keys(movieData).forEach(category => {
+                const container = document.getElementById(category);
+                if (container) {
+                    container.innerHTML = '';
+                    movieData[category].forEach(movie => {
+                        const movieCard = createMovieCard(movie);
+                        container.appendChild(movieCard);
+                    });
+                }
+            });
+        }
+
+        // Create movie card element
+        function createMovieCard(movie) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.onclick = () => openModal(movie);
+            
+            card.innerHTML = `
+                <img src="${movie.image}" alt="${movie.alt}" onerror="this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/988dfbe2-e65b-4297-ad1d-242f7ec92ede.png'">
+                <div class="movie-overlay">
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-info">${movie.year} • ${movie.rating} • ${movie.duration}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Profile dropdown
+            const profileBtn = document.getElementById('profileBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            profileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+            });
+
+            // Search functionality
+            const searchBox = document.getElementById('searchBox');
+            searchBox.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                if (query.length > 2) {
+                    searchContent(query);
+                } else {
+                    loadContent();
+                }
+            });
+
+            // Category tabs
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    filterContent(this.dataset.category);
+                });
+            });
+
+            // Navigation links
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.dataset.category;
+                    if (category) {
+                        filterContent(category);
+                    }
+                });
+            });
+
+            // Modal close on outside click
+            const modal = document.getElementById('modal');
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Update hero content periodically
+        function updateHeroContent() {
+            const heroTitles = [
+                {
+                    title: "Stranger Things",
+                    description: "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.",
+                    image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/11b9e5fe-f33f-4979-9d8c-6855e04bd847.png",
+                    alt: "Epic fantasy landscape with a lone warrior standing on a cliff overlooking a vast magical kingdom with floating islands and glowing crystals at sunset"
+                },
+                {
+                    title: "The Witcher",
+                    description: "Geralt of Rivia, a monster hunter, struggles to find his place in a world where people often prove more wicked than beasts.",
+                    image: "https://placehold.co/1920x1080",
+                    alt: "Medieval fantasy warrior with silver hair wielding a sword against monsters in a dark enchanted forest"
+                },
+                {
+                    title: "Money Heist",
+                    description: "A criminal mastermind known as The Professor plans the biggest heist in recorded history at the Royal Mint of Spain.",
+                    image: "https://placehold.co/1920x1080",
+                    alt: "Group of robbers wearing red jumpsuits and Salvador Dali masks inside a bank vault surrounded by money and gold"
+                }
+            ];
+
+            let currentIndex = 0;
+            
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % heroTitles.length;
+                const hero = heroTitles[currentIndex];
+                
+                document.getElementById('heroTitle').textContent = hero.title;
+                document.getElementById('heroDescription').textContent = hero.description;
+                document.getElementById('heroBg').src = hero.image;
+                document.getElementById('heroBg').alt = hero.alt;
+            }, 10000); // Change every 10 seconds
+        }
+
+        // Search content
+        function searchContent(query) {
+            const allMovies = Object.values(movieData).flat();
+            const results = allMovies.filter(movie => 
+                movie.title.toLowerCase().includes(query) ||
+                movie.description.toLowerCase().includes(query)
+            );
+
+            // Clear all rows and show search results
+            Object.keys(movieData).forEach(category => {
+                const container = document.getElementById(category);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+
+            // Show results in trending section
+            const trendingContainer = document.getElementById('trending');
+            results.forEach(movie => {
+                const movieCard = createMovieCard(movie);
+                trendingContainer.appendChild(movieCard);
+            });
+
+            // Update row header
+            const firstRowHeader = document.querySelector('.row-header');
+            firstRowHeader.textContent = `Search Results for "${query}" (${results.length} found)`;
+        }
+
+        // Filter content by category
+        function filterContent(category) {
+            if (category === 'all' || category === 'home') {
+                loadContent();
+                return;
+            }
+
+            // Map navigation categories to data categories
+            const categoryMap = {
+                'tv': ['shows', 'originals'],
+                'movies': ['movies', 'action'],
+                'new': ['trending'],
+                'list': ['trending'] // Mock "my list"
+            };
+
+            const categoriesToShow = categoryMap[category] || [category];
+            
+            // Hide all rows first
+            Object.keys(movieData).forEach(cat => {
+                const container = document.getElementById(cat);
+                if (container) {
+                    container.parentElement.parentElement.style.display = 'none';
+                }
+            });
+
+            // Show selected categories
+            categoriesToShow.forEach(cat => {
+                const container = document.getElementById(cat);
+                if (container) {
+                    container.parentElement.parentElement.style.display = 'block';
+                }
+            });
+        }
+
+        // Scroll row content
+        function scrollRow(button, direction) {
+            const rowContent = button.parentElement.querySelector('.row-content');
+            const scrollAmount = 300;
+            
+            if (direction === 'left') {
+                rowContent.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                rowContent.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        // Open modal
+        function openModal(movie) {
+            const modal = document.getElementById('modal');
+            
+            if (movie === 'hero') {
+                // Use current hero content
+                movie = {
+                    title: document.getElementById('heroTitle').textContent,
+                    description: document.getElementById('heroDescription').textContent,
+                    image: "https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e67d486a-dc40-42b5-9e67-e82a1e06847c.png",
+                    alt: "Detailed movie scene showing dramatic action sequence with special effects and cinematic lighting",
+                    year: "2023",
+                    rating: "TV-14",
+                    duration: "4 Seasons"
+                };
+            }
+            
+            document.getElementById('modalTitle').textContent = movie.title;
+            document.getElementById('modalDescription').textContent = movie.description;
+            document.getElementById('modalYear').textContent = movie.year;
+            document.getElementById('modalRating').textContent = movie.rating;
+            document.getElementById('modalDuration').textContent = movie.duration;
+            document.getElementById('modalBg').src = movie.image;
+            document.getElementById('modalBg').alt = movie.alt;
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Play content (mock function)
+        function playContent() {
+            alert('Playing content... (This is a demo)');
+        }
+
+        // Add to list (mock function)
+        function addToList() {
+            alert('Added to My List! (This is a demo)');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.key === 'Enter' && document.activeElement.classList.contains('movie-card')) {
+                document.activeElement.click();
+            }
+        });
+
+        // Lazy loading for images
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '50px'
+        };
+
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        imageObserver.unobserve(img);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Auto-scroll rows demo
+        function autoScrollDemo() {
+            const rows = document.querySelectorAll('.row-content');
+            rows.forEach((row, index) => {
+                setTimeout(() => {
+                    row.scrollBy({ left: 300, behavior: 'smooth' });
+                    setTimeout(() => {
+                        row.scrollBy({ left: -300, behavior: 'smooth' });
+                    }, 2000);
+                }, index * 1000);
+            });
+        }
+
+        // Start auto-scroll demo after 5 seconds
+        setTimeout(autoScrollDemo, 5000);
+    </script>
+</body>
+</html>
+
